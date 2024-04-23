@@ -1,5 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTwitter, faFacebookF, faInstagram, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
+
 
 function AboutUs() {
   return (
@@ -25,17 +28,15 @@ function AboutUs() {
                   alt=""
                   style={{ height: "35%", width: "60%", objectFit: "cover" }}
                 />
-                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Dong Bajolo</h4>
+                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Jushua Pabelic</h4>
                 <p className="card-text" style={{ marginBottom: "3rem" }}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Voluptas voluptatem repellendus unde veniam eius quia
-                  inventore amet dicta? Incidunt, cumque.
+                A young and ambitious full-stack developer with a passion for crafting and enhancing web applications, dedicated to staying updated with the latest technologies and best practices in the field. 
                 </p>
                 <div className="icons-container" style={{ display: "flex", justifyContent: "center", gap: ".5rem" }}>
-                  <i className="fab fa-twitter"></i>
-                  <i className="fab fa-facebook-f"></i>
-                  <i className="fab fa-instagram"></i>
-                  <i className="fab fa-linkedin-in"></i>
+                  <FontAwesomeIcon icon={faTwitter} />
+                  <FontAwesomeIcon icon={faFacebookF} />
+                  <FontAwesomeIcon icon={faInstagram} />
+                  <FontAwesomeIcon icon={faLinkedinIn} />   
                 </div>
               </div>
             </div>
@@ -49,17 +50,15 @@ function AboutUs() {
                   alt=""
                   style={{ height: "35%", width: "60%", objectFit: "cover" }}
                 />
-                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Dong Bajolo</h4>
+                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Dan Bjerfstin Famas</h4>
                 <p className="card-text" style={{ marginBottom: "3rem" }}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Voluptas voluptatem repellendus unde veniam eius quia
-                  inventore amet dicta? Incidunt, cumque.
+                Young Software Engineer who excels in developing innovative solutions, particularly in challenging scenarios where adaptability is crucial.
                 </p>
                 <div className="icons-container" style={{ display: "flex", justifyContent: "center", gap: ".5rem" }}>
-                  <i className="fab fa-twitter"></i>
-                  <i className="fab fa-facebook-f"></i>
-                  <i className="fab fa-instagram"></i>
-                  <i className="fab fa-linkedin-in"></i>
+                  <FontAwesomeIcon icon={faTwitter} />
+                  <FontAwesomeIcon icon={faFacebookF} />
+                  <FontAwesomeIcon icon={faInstagram} />
+                  <FontAwesomeIcon icon={faLinkedinIn} />   
                 </div>
               </div>
             </div>
@@ -73,17 +72,15 @@ function AboutUs() {
                   alt=""
                   style={{ height: "35%", width: "60%", objectFit: "cover" }}
                 />
-                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Dong Bajolo</h4>
+                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Irisjen De Lara</h4>
                 <p className="card-text" style={{ marginBottom: "3rem" }}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Voluptas voluptatem repellendus unde veniam eius quia
-                  inventore amet dicta? Incidunt, cumque.
+                Young Project Manager who's good at handling tasks and projects simultaneously, especially in crucial situations where efficiency is vital.
                 </p>
                 <div className="icons-container" style={{ display: "flex", justifyContent: "center", gap: ".5rem" }}>
-                  <i className="fab fa-twitter"></i>
-                  <i className="fab fa-facebook-f"></i>
-                  <i className="fab fa-instagram"></i>
-                  <i className="fab fa-linkedin-in"></i>
+                  <FontAwesomeIcon icon={faTwitter} />
+                  <FontAwesomeIcon icon={faFacebookF} />
+                  <FontAwesomeIcon icon={faInstagram} />
+                  <FontAwesomeIcon icon={faLinkedinIn} />   
                 </div>
               </div>
             </div>
@@ -97,17 +94,15 @@ function AboutUs() {
                   alt=""
                   style={{ height: "35%", width: "60%", objectFit: "cover" }}
                 />
-                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Dong Bajolo</h4>
+                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Nozomi Kawakami</h4>
                 <p className="card-text" style={{ marginBottom: "3rem" }}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Voluptas voluptatem repellendus unde veniam eius quia
-                  inventore amet dicta? Incidunt, cumque.
+                a guy with an unknown background—joined our team determined to prove his worth through hard work and dedication.
                 </p>
                 <div className="icons-container" style={{ display: "flex", justifyContent: "center", gap: ".5rem" }}>
-                  <i className="fab fa-twitter"></i>
-                  <i className="fab fa-facebook-f"></i>
-                  <i className="fab fa-instagram"></i>
-                  <i className="fab fa-linkedin-in"></i>
+                  <FontAwesomeIcon icon={faTwitter} />
+                  <FontAwesomeIcon icon={faFacebookF} />
+                  <FontAwesomeIcon icon={faInstagram} />
+                  <FontAwesomeIcon icon={faLinkedinIn} />           
                 </div>
               </div>
             </div>

@@ -60,7 +60,7 @@ export default class UserDetails extends Component {
             <div className="collapse navbar-collapse" id="menu">
               <ul className="navbar-nav ms-auto">
                 <li className="nav-item">
-                  <a className="nav-link text-color" href="#about">
+                  <a className="nav-link text-color" href="./about-us">
                     About Us
                   </a>
                 </li>
@@ -96,11 +96,7 @@ export default class UserDetails extends Component {
                       Welcome {userData && userData.fname}
                     </h1>
                     <p className="lead my-4">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Velit doloribus iusto commodi corrupti praesentium
-                      repellat eius, atque, quod nihil tempore inventore
-                      tempora error, assumenda numquam consectetur. Optio quae
-                      voluptates sunt!
+                    A centralized application; An educational blog site for students under the Department of College of Information Technology and Communication in USTP-CDO
                     </p>
                     <button
                       className="btn btn-light btn-lg fw-bold"

@@ -7,6 +7,7 @@ import Login from './components/login_component';
 import SignUp from './components/signup_component';
 import UserDetails from './components/userDetails';
 import AboutUs from './components/aboutUs';
+import Reset from './components/reset';
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn");
@@ -43,10 +44,14 @@ function App() {
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/userDetails" element={<UserDetails />} />
               <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/forgot-password" element={<Reset />} />
             </Routes>
           </div>
         </div>
       </div>
+      <Routes>
+        <Route path="/forgot-password" element={<Reset />} />
+      </Routes>
     </Router>
   )
 }

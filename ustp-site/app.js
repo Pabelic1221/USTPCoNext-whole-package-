@@ -5,6 +5,7 @@ app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 const bcrypt = require("bcryptjs");
+app.set("view engine","ejs");
 
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "qwertyasdfzxc1238910!?"
@@ -17,6 +18,8 @@ mongoose.connect(mongoUrl,{
 }).catch((e)=>console.log(e));
 
 require("./userDetails");
+
+//Website
 
 const User = mongoose.model("UserInfo");
 app.post("/register", async(req,res)=>{
@@ -76,7 +79,54 @@ app.post("/userData", async (req, res)=>{
             res.send({status: "error", data: error});
         });
     }catch (error){}
-})
+});
+
+app.post("/forgot-password", async(req, res)=>{
+    const {email} = req.body;
+    try{
+        const oldUser = await User.findOne({email});
+        if (!oldUser){
+            return res.json("User Not Exist!");
+        }
+        const secret = JWT_SECRET + oldUser.password;
+        const token = jwt.sign({email: oldUser.email, id: oldUser._id}, secret,{expiresIn: "5m",});
+        const link = `http://localhost:3000/reset-password/${oldUser._id}/${token}`;
+        console.log(link);
+    }   catch (error){}
+});
+
+app.get("/reset-password/:id/:token", async(req, res)=>{
+    const {id, token} = req.params;
+    console.log(req.params);
+    const oldUser = await User.findOne({ _id: id});
+    if (!oldUser){
+        return res.json({status:"User Not Exist!"});
+    }
+    const secret = JWT_SECRET + oldUser.password;
+    try{
+        const verify = jwt.verify(token, secret);
+        res.send("index",{email:verify.email});
+    }catch (error){
+        res.send("Not Verified");
+    }
+});
+
+app.post("/reset-password/:id/:token", async(req, res)=>{
+    const {id, token} = req.params;
+    console.log(req.params);
+    const oldUser = await User.findOne({ _id: id});
+    if (!oldUser){
+        return res.json({status:"User Not Exist!"});
+    }
+    const secret = JWT_SECRET + oldUser.password;
+    try{
+        const verify = jwt.verify(token, secret);
+        res.send("index",{email:verify.email});
+    }catch (error){
+        res.send("Not Verified");
+    }
+});
+//Mobile
 
 
 app.listen(5000,()=>{

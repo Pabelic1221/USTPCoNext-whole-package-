@@ -7,6 +7,7 @@ app.use(cors());
 const bcrypt = require("bcryptjs");
 app.set("view engine","ejs");
 
+
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "qwertyasdfzxc1238910!?"
 
@@ -105,9 +106,10 @@ app.get("/reset-password/:id/:token", async(req, res)=>{
     const secret = JWT_SECRET + oldUser.password;
     try{
         const verify = jwt.verify(token, secret);
-        res.send("index",{email:verify.email});
-    }catch (error){
-        res.send("Not Verified");
+        res.render("index",{email: verify.email});
+    }catch(error){
+        console.log(error);
+        res.send("Not Verified")
     }
 });
 
@@ -121,8 +123,17 @@ app.post("/reset-password/:id/:token", async(req, res)=>{
     const secret = JWT_SECRET + oldUser.password;
     try{
         const verify = jwt.verify(token, secret);
-        res.send("index",{email:verify.email});
+        const encryptedPassword = await bcrypt.hash(password, 10);
+        await User.updateOne({
+            _id: id,
+        },{
+            $set:{
+                password: encryptedPassword,
+            }
+        })
+        res.json({status: "Password Verified"});
     }catch (error){
+        console.log(error);
         res.send("Not Verified");
     }
 });

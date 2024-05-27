@@ -38,7 +38,7 @@ render(){
 
             <div className="mb-3">
                 <label>Email Address</label>
-                <input type="email" className="form-control" placeholder="Enter email" onChange={(e) => this.MediaStreamAudioDestinationNode({email: e.target.value})}
+                <input type="email" className="form-control" placeholder="Enter email" onChange={(e) => this.setState({email: e.target.value})}
                 />
             </div>
             <div className="d-grid">

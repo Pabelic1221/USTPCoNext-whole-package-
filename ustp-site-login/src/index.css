@@ -37,10 +37,15 @@ html,
 .navbar-light {
   background-color: #044556;
   box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+
 }
 
 .navbar-brand{
   color: #ffffff;
+}
+
+.navbar-collapse{
+  margin-inline-start: 63%;
 }
 
 .auth-wrapper {
@@ -48,6 +53,14 @@ html,
   justify-content: center;
   flex-direction: column;
   text-align: left;
+}
+.custom-bg {
+  background-color: #044556 !important;
+}
+
+.custom-margin {
+  margin-top: 20rem !important; /* Adjust as needed */
+  margin-bottom: 20rem !important; /* Adjust as needed */
 }
 
 .auth-inner {
@@ -89,4 +102,32 @@ html,
 
 .forgot-password a {
   color: #167bff;
+}
+
+.btn {
+  margin-left: 5%;
+}
+.btn-primary {
+  background-color: #044556 !important; /* Tomato color */
+  color: white !important; /* Text color */
+  border: 2px solid black !important;
+  font-weight: bold !important;
+
+}
+
+.btn-primary:hover {
+  background-color: white !important; /* Darker shade for hover */
+  color: black !important;
+  font-weight: bold !important;
+}
+
+.custom-btn1{
+  background-color: white !important; /* Tomato color */
+  color: #044556 !important; /* Text color */
+  border: 2px solid black !important;
+  font-weight: bold !important;
+}
+.custom-btn1:hover{
+  background-color: #044556 !important; /* Darker shade for hover */
+  color: white !important;
 }

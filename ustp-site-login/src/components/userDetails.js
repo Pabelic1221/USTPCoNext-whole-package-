@@ -1,4 +1,6 @@
+// src/components/userDetails.js
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 
 export default class UserDetails extends Component {
   constructor(props) {
@@ -46,46 +48,33 @@ export default class UserDetails extends Component {
     const { userData, error } = this.state;
 
     return (
-      <div>
-        <nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top mybg">
+      <div className="App">
+        <nav className="navbar navbar-expand-lg navbar-light fixed-top">
           <div className="container">
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#menu"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="menu">
-              <ul className="navbar-nav ms-auto">
+            <Link className="navbar-brand" to={'/sign-in'} style={{ color: 'white' }}>
+              USTP-CoNext
+            </Link>
+            <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+              <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
-                  <a className="nav-link text-color" href="./about-us">
+                  <Link className="nav-link" to={'/about-us'} style={{ color: 'white' }}>
                     About Us
-                  </a>
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link text-color" href="#faq">
-                    FAQ
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link text-color" href="#administrators">
-                    Administrators
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link text-color" href="/login">
-                    Login
-                  </a>
+                  <Link className="nav-link" to={'/about-us'} style={{ color: 'white' }}>
+                    News
+                  </Link>
                 </li>
               </ul>
+              <button onClick={this.logOut} className="btn btn-primary custom-btn">Log Out</button>
+              <button onClick={this.logOut} className="btn custom-btn1">Profile</button>
             </div>
           </div>
         </nav>
 
-        <section className="text-dark text-center text-sm-start p-5 mybg align-top">
-          <div className="container">
+        <section className="text-dark text-center text-sm-start p-5 mybg align-top custom-bg">
+          <div className="container custom-margin">
             <div className="d-sm-flex align-items-center justify-content-between text-light">
               <div>
                 {error ? (
@@ -96,32 +85,21 @@ export default class UserDetails extends Component {
                       Welcome {userData && userData.fname}
                     </h1>
                     <p className="lead my-4">
-                    A centralized application; An educational blog site for students under the Department of College of Information Technology and Communication in USTP-CDO
+                      A centralized application; An educational blog site for students under the Department of College of Information Technology and Communication in USTP-CDO
                     </p>
-                    <button
-                      className="btn btn-light btn-lg fw-bold"
-                      data-bs-toggle="modal"
-                      data-bs-target="#Connect"
-                    >
-                      Connect With Us!
-                    </button>
                   </div>
                 )}
               </div>
 
               <img
-                src="{{ asset('images/header-img.png') }}"
-                alt=""
+                src="/path/to/header-img.png" // Update this path to the correct image location
+                alt="Header"
                 className="w-50 d-none d-sm-block hide-on-sm"
               />
             </div>
           </div>
         </section>
-
         <br />
-        <button onClick={this.logOut} className="btn btn-primary">
-          Log Out
-        </button>
       </div>
     );
   }

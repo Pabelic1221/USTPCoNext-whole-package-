@@ -9,6 +9,7 @@ import SignUp from './components/signup_component';
 import UserDetails from './components/userDetails';
 import AboutUs from './components/aboutUs';
 import Reset from './components/reset';
+import UserProfile from './components/user_profile';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/userDetails" element={<UserDetails />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/reset" element={<Reset />} />
+        <Route path="/userProfile" element={<UserProfile />} />
       </Routes>
     </Router>
   );

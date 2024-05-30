@@ -75,7 +75,7 @@ class General extends Component {
   }
 
   render() {
-    const { fname, lname, email, role, error } = this.state;
+    const { fname, lname, email, error } = this.state;
 
     return (
       <div>

@@ -8,6 +8,7 @@ export default class UserDetails extends Component {
     this.state = {
       userData: null,
       error: null,
+      news: [],
     };
   }
 
@@ -37,7 +38,31 @@ export default class UserDetails extends Component {
       .catch((error) => {
         this.setState({ error: error.message });
       });
-  }
+
+  // Fetch news data
+  fetch("http://localhost:5000/news", {
+    method: "GET",
+    crossDomain: true,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch news data");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data, "news");
+      this.setState({ news: data });
+    })
+    .catch((error) => {
+      this.setState({ error: error.message });
+    });
+}
 
   logOut = () => {
     window.localStorage.clear();
@@ -45,7 +70,7 @@ export default class UserDetails extends Component {
   };
 
   render() {
-    const { userData, error } = this.state;
+    const { userData, error, news } = this.state;
 
     return (
       <div className="App">
@@ -62,7 +87,7 @@ export default class UserDetails extends Component {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to={'/about-us'} style={{ color: 'white' }}>
+                  <Link className="nav-link" to={'/create-news'} style={{ color: 'white' }}>
                     News
                   </Link>
                 </li>
@@ -97,6 +122,24 @@ export default class UserDetails extends Component {
                 className="w-50 d-none d-sm-block hide-on-sm"
               />
             </div>
+          </div>
+        </section>
+
+        {/* News section */}
+        <section className="container mt-5">
+          <h2 className="text-center mb-4">Latest News</h2>
+          <div className="row">
+            {/* Map through news array and render each news card */}
+            {news.map((item, index) => (
+              <div key={index} className="col-lg-4 col-md-6 mb-4">
+                <div className="card">
+                  <img src={item.image} className="card-img-top" alt={item.title} />
+                  <div className="card-body">
+                    <h5 className="card-title">{item.title}</h5>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
         <br />

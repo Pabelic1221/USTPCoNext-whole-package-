@@ -1,12 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 
 export const UserContext = createContext();
 
-export const UserProvider = ({ children }) => {
+export const UserProvider = ({ children, navigate }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,7 +22,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const login = (email, password) => {
-    fetch("http://localhost:5000/login", {
+    fetch("http://localhost:5000/login-user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +50,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    navigate('/login');
+    navigate('/login-user');
   };
 
   const register = (fname, lname, email, password, role) => {
@@ -67,7 +66,7 @@ export const UserProvider = ({ children }) => {
       .then(data => {
         if (data.status === "okay") {
           alert("Registered Successfully");
-          navigate('/login');
+          navigate('/sign-in');
         } else {
           alert(data.error || "Registration failed");
         }

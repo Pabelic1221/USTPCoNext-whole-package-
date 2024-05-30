@@ -1,16 +1,21 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-app.use(express.json());
 const cors = require("cors");
-app.use(cors());
 const bcrypt = require("bcryptjs");
+const multer = require("multer");
+const path = require("path");
+const router = express.Router();
+
 app.set("view engine", "ejs");
+app.use(express.json());
+app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "qwertyasdfzxc1238910!?";
 
-const mongoUrl = "mongodb+srv://pabelicjush:Pabelic12212001@cluster0.zou00st.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const mongoUrl = "mongodb+srv://pabelicjush:Pabelic1221@cluster0.zou00st.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
@@ -19,8 +24,45 @@ mongoose.connect(mongoUrl, {
 }).catch((e) => console.log(e));
 
 require("./userDetails");
+require("./news");
 
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+
+const upload = multer({ storage });
 const User = mongoose.model("UserInfo");
+const News = mongoose.model("News");
+
+const authenticateToken = (req, res, next) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(400).json({ message: 'Invalid token' });
+  }
+};
+
+// Middleware to authorize based on role
+const authorizeRole = (role) => (req, res, next) => {
+  if (req.user.role !== role) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
+};
+
+
 
 app.post("/register", async (req, res) => {
   const { fname, lname, email, password, role } = req.body;
@@ -59,8 +101,8 @@ app.post("/login-user", async (req, res) => {
     return res.json({ error: "User Not Found" });
   }
   if (await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: 60,
+    const token = jwt.sign({ email: user.email, role: user.role }, JWT_SECRET, {
+      expiresIn: '1h',
     });
 
     if (res.status(201)) {
@@ -165,6 +207,36 @@ app.post("/updateProfile", async (req, res) => {
       res.send({ status: "okay" });
     } catch (error) {
       res.send({ status: "error", error: error.message });
+    }
+  });
+
+  //fetch NEWS
+  app.get("/news", async (req, res) => {
+    try {
+      const news = await News.find({});
+      res.status(200).json(news);
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error.message });
+    }
+  });
+
+  // Create news endpoint with authentication and authorization
+  app.post('/create-news', authenticateToken, authorizeRole('admin'), upload.single('photo'), async (req, res) => {
+    try {
+      const { title, description } = req.body;
+      const photo = req.file ? `/uploads/${req.file.filename}` : null;
+  
+      const news = new News({
+        title,
+        description,
+        photo,
+      });
+  
+      await news.save();
+  
+      res.status(200).json({ status: 'success', data: news });
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error.message });
     }
   });
 

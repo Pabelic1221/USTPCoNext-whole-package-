@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { UserContext } from '../UserContext';
+import { UserContext } from './UserContext';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user } = useContext(UserContext);
@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (!allowedRoles.includes(user.role)) {
     // If user does not have the required role, redirect to a general page or show an error
-    return <Navigate to="/general" />;
+    return <Navigate to="/unauthorized" />;
   }
 
   // If user is authenticated and has the required role, render the children

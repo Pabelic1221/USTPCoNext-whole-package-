@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
 const router = express.Router();
-
+ 
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cors());
@@ -29,7 +29,7 @@ require("./news");
 // Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'images/');
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -240,6 +240,12 @@ app.post("/updateProfile", async (req, res) => {
     }
   });
 
+
+  app.post('/upload-image', upload.single('imageFile'), (req, res) => {
+    // Handle the uploaded file here
+    res.send('Image uploaded successfully');
+  });
+  
   
 app.listen(5000, () => {
   console.log("port 5000, Server started...");

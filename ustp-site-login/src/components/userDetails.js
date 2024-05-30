@@ -133,7 +133,7 @@ export default class UserDetails extends Component {
             {news.map((item, index) => (
               <div key={index} className="col-lg-4 col-md-6 mb-4">
                 <div className="card">
-                  <img src={item.image} className="card-img-top" alt={item.title} />
+                  <img src={`http://localhost:5000${item.photo}`} className="card-img-top" alt={item.title} />
                   <div className="card-body">
                     <h5 className="card-title">{item.title}</h5>
                   </div>

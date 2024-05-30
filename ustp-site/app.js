@@ -1,3 +1,4 @@
+// Import required modules
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -5,26 +6,29 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
-const router = express.Router();
- 
-app.set("view engine", "ejs");
+const jwt = require("jsonwebtoken");
+
+// Set up middleware
 app.use(express.json());
 app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const jwt = require("jsonwebtoken");
+// Set up JWT secret
 const JWT_SECRET = "qwertyasdfzxc1238910!?";
 
-const mongoUrl = "mongodb+srv://pabelicjush:Pabelic1221@cluster0.zou00st.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-mongoose.connect(mongoUrl, {
+// Connect to MongoDB
+mongoose.connect("mongodb+srv://pabelicjush:Pabelic1221@cluster0.zou00st.mongodb.net/", {
   useNewUrlParser: true,
 }).then(() => {
-  console.log("connected to database");
-}).catch((e) => console.log(e));
+  console.log("Connected to database");
+}).catch((error) => console.log(error));
 
+// Define User and News models
 require("./userDetails");
 require("./news");
+
+const User = mongoose.model("UserInfo");
+const News = mongoose.model("News");
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -36,11 +40,9 @@ const storage = multer.diskStorage({
   },
 });
 
-
 const upload = multer({ storage });
-const User = mongoose.model("UserInfo");
-const News = mongoose.model("News");
 
+// Authentication middleware
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
@@ -54,7 +56,7 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-// Middleware to authorize based on role
+// Authorization middleware
 const authorizeRole = (role) => (req, res, next) => {
   if (req.user.role !== role) {
     return res.status(403).json({ message: 'Forbidden' });
@@ -62,8 +64,13 @@ const authorizeRole = (role) => (req, res, next) => {
   next();
 };
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ status: 'error', message: 'Something went wrong!' });
+});
 
-
+// User registration route
 app.post("/register", async (req, res) => {
   const { fname, lname, email, password, role } = req.body;
 
@@ -93,6 +100,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// User login route
 app.post("/login-user", async (req, res) => {
   const { email, password } = req.body;
 
@@ -105,33 +113,26 @@ app.post("/login-user", async (req, res) => {
       expiresIn: '1h',
     });
 
-    if (res.status(201)) {
-      return res.json({ status: "okay", data: token });
-    } else {
-      return res.json({ error: "error" });
-    }
+    res.json({ status: "okay", data: token });
+  } else {
+    res.json({ status: "error", error: "Invalid Password" });
   }
-  res.json({ status: "error", error: "Invalid Password" });
 });
 
-app.post("/userData", async (req, res) => {
+// Fetch user profile route
+app.post("/userData", authenticateToken, async (req, res) => {
   const { token } = req.body;
   try {
     const user = jwt.verify(token, JWT_SECRET);
-    console.log(user);
     const useremail = user.email;
-    User.findOne({ email: useremail })
-      .then((data) => {
-        res.send({ status: "okay", data: data });
-      })
-      .catch((error) => {
-        res.send({ status: "error", data: error });
-      });
+    const userData = await User.findOne({ email: useremail });
+    res.send({ status: "okay", data: userData });
   } catch (error) {
     res.send({ status: "error", error: "Invalid Token" });
   }
 });
 
+// Forgot password route
 app.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   try {
@@ -148,9 +149,9 @@ app.post("/forgot-password", async (req, res) => {
   }
 });
 
+// Reset password route
 app.get("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
-  console.log(req.params);
   const oldUser = await User.findOne({ _id: id });
   if (!oldUser) {
     return res.json({ status: "User Not Exist!" });
@@ -168,7 +169,6 @@ app.get("/reset-password/:id/:token", async (req, res) => {
 app.post("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
-  console.log(req.params);
   const oldUser = await User.findOne({ _id: id });
   if (!oldUser) {
     return res.json({ status: "User Not Exist!" });
@@ -191,62 +191,63 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-// Update profile
-app.post("/updateProfile", async (req, res) => {
-    const { token, fname, lname, email, role, bio, birthday, country, phone, website } = req.body;
+// Update user profile route
+app.post("/updateProfile", authenticateToken, async (req, res) => {
+  const { token, fname, lname, email, role, bio, birthday, country, phone, website } = req.body;
   
-    try {
-      const user = jwt.verify(token, JWT_SECRET);
-      const userEmail = user.email;
+  try {
+    const user = jwt.verify(token, JWT_SECRET);
+    const userEmail = user.email;
   
-      await User.updateOne(
-        { email: userEmail },
-        { $set: { fname, lname, email, role, bio, birthday, country, phone, website } }
-      );
+    await User.updateOne(
+      { email: userEmail },
+      { $set: { fname, lname, email, role, bio, birthday, country, phone, website } }
+    );
   
-      res.send({ status: "okay" });
-    } catch (error) {
-      res.send({ status: "error", error: error.message });
-    }
-  });
+    res.send({ status: "okay" });
+  } catch (error) {
+    res.send({ status: "error", error: error.message });
+  }
+});
 
-  //fetch NEWS
-  app.get("/news", async (req, res) => {
-    try {
-      const news = await News.find({});
-      res.status(200).json(news);
-    } catch (error) {
-      res.status(500).json({ status: 'error', message: error.message });
-    }
-  });
+// Fetch news route
+app.get("/news", async (req, res) => {
+  try {
+    const news = await News.find({});
+    res.status(200).json(news);
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
 
-  // Create news endpoint with authentication and authorization
-  app.post('/create-news', authenticateToken, authorizeRole('admin'), upload.single('photo'), async (req, res) => {
-    try {
-      const { title, description } = req.body;
-      const photo = req.file ? `/uploads/${req.file.filename}` : null;
-  
-      const news = new News({
-        title,
-        description,
-        photo,
-      });
-  
-      await news.save();
-  
-      res.status(200).json({ status: 'success', data: news });
-    } catch (error) {
-      res.status(500).json({ status: 'error', message: error.message });
-    }
-  });
+// Create news route with authentication and authorization
+app.post('/create-news', authenticateToken, authorizeRole('admin'), upload.single('photo'), async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const photo = req.file ? `/uploads/${req.file.filename}` : null;
 
+    const news = new News({
+      title,
+      description,
+      photo,
+    });
 
-  app.post('/upload-image', upload.single('imageFile'), (req, res) => {
-    // Handle the uploaded file here
-    res.send('Image uploaded successfully');
-  });
-  
-  
-app.listen(5000, () => {
-  console.log("port 5000, Server started...");
+    await news.save();
+
+    res.status(200).json({ status: 'success', data: news });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Image upload route
+app.post('/upload-image', upload.single('imageFile'), (req, res) => {
+  // Handle the uploaded file here
+  res.send('Image uploaded successfully');
+});
+
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

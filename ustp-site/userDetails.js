@@ -10,12 +10,21 @@ const UserDetailsSchema = new mongoose.Schema(
     bio: String,
     birthday: Date,
     country: String,
-    phone: String,
+    phone: {
+      type: String,
+      validate: {
+        validator: function(v) {
+          return /\+63\d{9}/.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number!`
+      }
+    },
     website: String
   },
   {
     collection: "UserInfo",
   }
 );
+
 
 mongoose.model("UserInfo", UserDetailsSchema);

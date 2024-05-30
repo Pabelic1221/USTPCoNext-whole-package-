@@ -1,4 +1,3 @@
-// src/components/SignUp.js
 import React, { Component } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 
@@ -10,6 +9,7 @@ export default class SignUp extends Component {
       lname: "",
       email: "",
       password: "",
+      role: "user",  // Add role state
       redirectToSignIn: false,
       error: null,
     };
@@ -18,8 +18,8 @@ export default class SignUp extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    const { fname, lname, email, password } = this.state;
-    console.log(fname, lname, email, password);
+    const { fname, lname, email, password, role } = this.state;
+    console.log(fname, lname, email, password, role);
 
     fetch("http://localhost:5000/register", {
       method: "POST",
@@ -33,7 +33,8 @@ export default class SignUp extends Component {
         fname,
         lname,
         email,
-        password
+        password,
+        role  // Include role in the request body
       }),
     })
       .then((res) => res.json())
@@ -86,7 +87,7 @@ export default class SignUp extends Component {
             <form onSubmit={this.handleSubmit}>
               <h3>Sign Up</h3>
 
-              {error && <p style={{ color: 'red' }}>{error}</p>}
+              {error && (<p style={{ color: 'red' }}>{error}</p>)}
 
               <div className="mb-3">
                 <label>First name</label>
@@ -130,6 +131,30 @@ export default class SignUp extends Component {
                   value={this.state.password}
                   onChange={(e) => this.setState({ password: e.target.value })}
                 />
+              </div>
+
+              <div className="mb-3">
+                <label>Role</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <label>
+                    <input
+                      type="radio"
+                      value="user"
+                      checked={this.state.role === "user"}
+                      onChange={(e) => this.setState({ role: e.target.value })}
+                    />
+                    User
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="admin"
+                      checked={this.state.role === "admin"}
+                      onChange={(e) => this.setState({ role: e.target.value })}
+                    />
+                    Admin
+                  </label>
+                </div>
               </div>
 
               <div className="d-grid">

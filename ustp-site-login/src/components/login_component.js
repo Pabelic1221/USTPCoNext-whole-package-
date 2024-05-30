@@ -28,7 +28,8 @@ export default class Login extends Component {
         email,
         password,
       }),
-    }).then((res) => res.json())
+    })
+      .then((res) => res.json())
       .then((data) => {
         console.log(data, "userRegister");
         if (data.status === "okay") {
@@ -109,7 +110,7 @@ export default class Login extends Component {
                 </button>
               </div>
               <p className="forgot-password text-right">
-                Forgot <a href="/reset">password?</a>
+                Forgot <a href="/">password?</a>
               </p>
             </form>
           </div>

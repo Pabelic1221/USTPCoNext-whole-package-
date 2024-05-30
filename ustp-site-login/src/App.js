@@ -8,8 +8,10 @@ import Login from './components/login_component';
 import SignUp from './components/signup_component';
 import UserDetails from './components/userDetails';
 import AboutUs from './components/aboutUs';
-import Reset from './components/reset';
-import UserProfile from './components/user_profile';
+import UpdateProfile from './components/UpdateProfile';
+import Info from './components/Info';
+import ChangePassword from './components/ChangePassword';
+import General from './components/General';
 
 function App() {
   return (
@@ -20,8 +22,10 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/userDetails" element={<UserDetails />} />
         <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/reset" element={<Reset />} />
-        <Route path="/userProfile" element={<UserProfile />} />
+        <Route path="/update-profile" element={<UpdateProfile />} />
+        <Route path="/info" element={<Info />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/general" element={<General />} />
       </Routes>
     </Router>
   );

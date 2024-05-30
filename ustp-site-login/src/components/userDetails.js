@@ -68,7 +68,7 @@ export default class UserDetails extends Component {
                 </li>
               </ul>
               <button onClick={this.logOut} className="btn btn-primary custom-btn">Log Out</button>
-              <button onClick={'/userProfile'} className="btn custom-btn1">Profile</button>
+              <button onClick={() => window.location.href='/update-profile'} className="btn custom-btn1">Profile</button>
             </div>
           </div>
         </nav>

@@ -10,6 +10,7 @@ export default class UserProfile extends Component {
       username: '',
       name: '',
       email: '',
+      company: '',
       bio: '',
       birthday: '',
       country: 'Philippines',

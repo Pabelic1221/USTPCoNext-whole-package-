@@ -12,22 +12,35 @@ import UpdateProfile from './components/UpdateProfile';
 import Info from './components/Info';
 import ChangePassword from './components/ChangePassword';
 import General from './components/General';
+import NewsCreation from './components/NewsCreation'; // Assuming this component exists
+import { UserProvider } from './UserContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/sign-in" element={<Login />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/userDetails" element={<UserDetails />} />
-        <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/update-profile" element={<UpdateProfile />} />
-        <Route path="/info" element={<Info />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/general" element={<General />} />
-      </Routes>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/sign-in" element={<Login />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/userDetails" element={<UserDetails />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/update-profile" element={<UpdateProfile />} />
+          <Route path="/info" element={<Info />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/general" element={<General />} />
+          <Route
+            path="/create-news"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <NewsCreation />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

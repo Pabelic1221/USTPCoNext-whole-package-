@@ -1,12 +1,114 @@
-// src/components/UpdateProfile.js
-import React from 'react';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
-import General from './General';
-import ChangePassword from './ChangePassword';
-import Info from './Info';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const UpdateProfile = () => {
   const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState('general');
+  const [formData, setFormData] = useState({
+    token: 'YOUR_JWT_TOKEN', // replace with actual token
+    name: '',
+    idNumber: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+    birthday: '',
+    country: 'Philippines',
+    contactNumber: '+63',
+  });
+
+  const [alert, setAlert] = useState({ message: '', type: '' });
+
+  // Fetch user details on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/userData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: formData.token }),
+        });
+        const data = await response.json();
+        if (data.status === 'okay' && data.data) {
+          setFormData((prevData) => ({
+            ...prevData,
+            name: data.data.name || '',
+            idNumber: data.data.idNumber || '',
+            birthday: data.data.birthday || '',
+            contactNumber: data.data.contactNumber || '',
+            country: data.data.country || 'Philippines',
+          }));
+        } else {
+          setAlert({ message: 'Failed to fetch user data', type: 'error' });
+        }
+      } catch (error) {
+        setAlert({ message: 'An error occurred while fetching user data.', type: 'error' });
+      }
+    };
+
+    fetchUserData();
+  }, [formData.token]);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      let bodyData;
+      if (activeSection === 'general') {
+        bodyData = {
+          token: formData.token,
+          name: formData.name,
+          idNumber: formData.idNumber,
+        };
+      } else if (activeSection === 'change-password') {
+        bodyData = {
+          token: formData.token,
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+        };
+      } else if (activeSection === 'info') {
+        bodyData = {
+          token: formData.token,
+          birthday: formData.birthday,
+          contactNumber: formData.contactNumber,
+          country: formData.country,
+        };
+      }
+
+      const response = await fetch('http://localhost:5000/updateProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setAlert({ message: 'Update successful', type: 'success' });
+      } else {
+        setAlert({ message: `Update failed: ${data.message}`, type: 'error' });
+      }
+    } catch (error) {
+      setAlert({ message: 'An error occurred while updating the profile.', type: 'error' });
+    }
+  };
+
+  const handleCancel = () => {
+    console.log('Cancelled');
+  };
+
+  const buttonStyle = {
+    color: 'white',
+    backgroundColor: '#044556',
+    borderColor: '#044556',
+  };
 
   return (
     <div className="App">
@@ -26,34 +128,156 @@ const UpdateProfile = () => {
             <button onClick={() => navigate('/userDetails')} className="btn custom-btn1">Back</button>
           </div>
         </div>
-      </nav>    
+      </nav>
       <div className="container custom-margin">
         <h2 className="my-4">Account settings</h2>
+        {alert.message && (
+          <div className={`alert ${alert.type === 'success' ? 'alert-success' : 'alert-danger'}`}>
+            {alert.message}
+          </div>
+        )}
         <div className="row">
           <div className="col-md-4">
-            <ul className="list-group">
-              <li className="list-group-item">
-                <Link to={'/general'} className="nav-link">General</Link>
-              </li>
-              <li className="list-group-item">
-                <Link to={'/change-password'} className="nav-link">Change password</Link>
-              </li>
-              <li className="list-group-item">
-                <Link to={'/info'} className="nav-link">Info</Link>
-              </li>
-            </ul>
+            <div className="list-group">
+              <button
+                onClick={() => setActiveSection('general')}
+                className={`list-group-item list-group-item-action ${activeSection === 'general' ? 'active' : ''}`}
+                style={activeSection === 'general' ? buttonStyle : {}}
+              >
+                General
+              </button>
+              <button
+                onClick={() => setActiveSection('change-password')}
+                className={`list-group-item list-group-item-action ${activeSection === 'change-password' ? 'active' : ''}`}
+                style={activeSection === 'change-password' ? buttonStyle : {}}
+              >
+                Change Password
+              </button>
+              <button
+                onClick={() => setActiveSection('info')}
+                className={`list-group-item list-group-item-action ${activeSection === 'info' ? 'active' : ''}`}
+                style={activeSection === 'info' ? buttonStyle : {}}
+              >
+                Info
+              </button>
+            </div>
           </div>
           <div className="col-md-8">
-            <Routes>
-              <Route path="/update-profile/general" element={<General />} />
-              <Route path="/update-profile/change-password" element={<ChangePassword />} />
-              <Route path="/update-profile/info" element={<Info />} />
-            </Routes>
+            {activeSection === 'general' && (
+              <div>
+                <h3>General</h3>
+                <form>
+                  <div className="form-group">
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      className="form-control"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>ID Number</label>
+                    <input
+                      type="text"
+                      name="idNumber"
+                      className="form-control"
+                      value={formData.idNumber}
+                      onChange={handleChange}
+                      placeholder="Enter your ID number"
+                    />
+                  </div>
+                </form>
+              </div>
+            )}
+            {activeSection === 'change-password' && (
+              <div>
+                <h3>Change Password</h3>
+                <form>
+                  <div className="form-group">
+                    <label>Current Password</label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      className="form-control"
+                      value={formData.currentPassword}
+                      onChange={handleChange}
+                      placeholder="Enter current password"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      className="form-control"
+                      value={formData.newPassword}
+                      onChange={handleChange}
+                      placeholder="Enter new password"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Confirm New Password</label>
+                    <input
+                      type="password"
+                      name="confirmNewPassword"
+                      className="form-control"
+                      value={formData.confirmNewPassword}
+                      onChange={handleChange}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                </form>
+              </div>
+            )}
+            {activeSection === 'info' && (
+              <div>
+                <h3>Info</h3>
+                <form>
+                  <div className="form-group">
+                    <label>Birthday</label>
+                    <input
+                      type="date"
+                      name="birthday"
+                      className="form-control"
+                      value={formData.birthday}
+                      onChange={handleChange}
+                      placeholder="Enter your birthday"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Country</label>
+                    <input
+                      type="text"
+                      name="country"
+                      className="form-control"
+                      value={formData.country}
+                      readOnly
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Contact Number</label>
+                    <input
+                      type="text"
+                      name="contactNumber"
+                      className="form-control"
+                      value={formData.contactNumber}
+                      onChange={handleChange}
+                      placeholder="Enter your contact number"
+                    />
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         </div>
+        <button onClick={handleSave} className="btn custom-btn1 mt-3">Save Changes</button>
+        <button onClick={handleCancel} className="btn custom-btn2 mt-3 ml-2">Cancel</button>
       </div>
     </div>
-  );
-}
+);
+};
 
 export default UpdateProfile;

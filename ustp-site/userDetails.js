@@ -7,6 +7,7 @@ const UserDetailsSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, required: true },
+    idNumber: String, // Added idNumber field
     bio: String,
     birthday: Date,
     country: String,
@@ -25,6 +26,5 @@ const UserDetailsSchema = new mongoose.Schema(
     collection: "UserInfo",
   }
 );
-
 
 mongoose.model("UserInfo", UserDetailsSchema);

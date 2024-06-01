@@ -9,12 +9,10 @@ import SignUp from './components/signup_component';
 import UserDetails from './components/userDetails';
 import AboutUs from './components/aboutUs';
 import UpdateProfile from './components/UpdateProfile';
-import Info from './components/Info';
-import ChangePassword from './components/ChangePassword';
-import General from './components/General';
 import NewsCreation from './components/NewsCreation';
 import ProtectedRoute from './components/ProtectedRoute';
 import Unauthorized from './components/Unauthorized';
+import AdminDashboard from './components/AdminDashboard'; // Import the AdminDashboard component
 
 function App() {
   return (
@@ -27,15 +25,20 @@ function App() {
           <Route path="/userDetails" element={<UserDetails />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/update-profile" element={<UpdateProfile />} />
-          <Route path="/info" element={<Info />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/general" element={<General />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route
             path="/create-news"
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <NewsCreation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />

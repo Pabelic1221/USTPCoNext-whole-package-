@@ -1,4 +1,3 @@
-// Import required modules
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -6,34 +5,31 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
-const jwt = require("jsonwebtoken");
 
-// Set up middleware
+app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Set up JWT secret
+const jwt = require("jsonwebtoken");
 const JWT_SECRET = "qwertyasdfzxc1238910!?";
 
-// Connect to MongoDB
-mongoose.connect("mongodb+srv://pabelicjush:Pabelic1221@cluster0.zou00st.mongodb.net/", {
+const mongoUrl = "mongodb+srv://pabelicjush:Pabelic1221@cluster0.zou00st.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
 }).then(() => {
-  console.log("Connected to database");
-}).catch((error) => console.log(error));
+  console.log("connected to database");
+}).catch((e) => console.log(e));
 
-// Define User and News models
 require("./userDetails");
 require("./news");
-
-const User = mongoose.model("UserInfo");
-const News = mongoose.model("News");
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'images/');
+    const uploadDir = path.join(__dirname, 'uploads');
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -41,8 +37,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+const User = mongoose.model("UserInfo");
+const News = mongoose.model("News");
 
-// Authentication middleware
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
@@ -56,7 +53,6 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-// Authorization middleware
 const authorizeRole = (role) => (req, res, next) => {
   if (req.user.role !== role) {
     return res.status(403).json({ message: 'Forbidden' });
@@ -64,16 +60,8 @@ const authorizeRole = (role) => (req, res, next) => {
   next();
 };
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ status: 'error', message: 'Something went wrong!' });
-});
-
-// User registration route
 app.post("/register", async (req, res) => {
   const { fname, lname, email, password, role } = req.body;
-
   const encryptedPassword = await bcrypt.hash(password, 10);
   try {
     const oldUser = await User.findOne({ email });
@@ -85,7 +73,7 @@ app.post("/register", async (req, res) => {
       lname,
       email,
       password: encryptedPassword,
-      role // Store the role
+      role
     });
     res.send({ status: "okay" });
   } catch (error) {
@@ -100,10 +88,8 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// User login route
 app.post("/login-user", async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email });
   if (!user) {
     return res.json({ error: "User Not Found" });
@@ -113,26 +99,33 @@ app.post("/login-user", async (req, res) => {
       expiresIn: '1h',
     });
 
-    res.json({ status: "okay", data: token });
-  } else {
-    res.json({ status: "error", error: "Invalid Password" });
+    if (res.status(201)) {
+      return res.json({ status: "okay", data: token });
+    } else {
+      return res.json({ error: "error" });
+    }
   }
+  res.json({ status: "error", error: "Invalid Password" });
 });
 
-// Fetch user profile route
-app.post("/userData", authenticateToken, async (req, res) => {
+app.post("/userData", async (req, res) => {
   const { token } = req.body;
   try {
     const user = jwt.verify(token, JWT_SECRET);
+    console.log(user);
     const useremail = user.email;
-    const userData = await User.findOne({ email: useremail });
-    res.send({ status: "okay", data: userData });
+    User.findOne({ email: useremail })
+      .then((data) => {
+        res.send({ status: "okay", data: data });
+      })
+      .catch((error) => {
+        res.send({ status: "error", data: error });
+      });
   } catch (error) {
     res.send({ status: "error", error: "Invalid Token" });
   }
 });
 
-// Forgot password route
 app.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   try {
@@ -149,9 +142,9 @@ app.post("/forgot-password", async (req, res) => {
   }
 });
 
-// Reset password route
 app.get("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
+  console.log(req.params);
   const oldUser = await User.findOne({ _id: id });
   if (!oldUser) {
     return res.json({ status: "User Not Exist!" });
@@ -169,6 +162,7 @@ app.get("/reset-password/:id/:token", async (req, res) => {
 app.post("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
+  console.log(req.params);
   const oldUser = await User.findOne({ _id: id });
   if (!oldUser) {
     return res.json({ status: "User Not Exist!" });
@@ -191,26 +185,47 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-// Update user profile route
-app.post("/updateProfile", authenticateToken, async (req, res) => {
-  const { token, fname, lname, email, role, bio, birthday, country, phone, website } = req.body;
-  
+app.post("/updateProfile", async (req, res) => {
+  const { token, name, idNumber, currentPassword, newPassword, birthday, country, contactNumber } = req.body;
   try {
+    // Verify token
     const user = jwt.verify(token, JWT_SECRET);
     const userEmail = user.email;
-  
-    await User.updateOne(
-      { email: userEmail },
-      { $set: { fname, lname, email, role, bio, birthday, country, phone, website } }
-    );
-  
-    res.send({ status: "okay" });
+
+    // Find user by email
+    const userRecord = await User.findOne({ email: userEmail });
+    if (!userRecord) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    // Update password if provided
+    if (currentPassword && newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, userRecord.password);
+      if (!isMatch) {
+        return res.status(400).json({ status: "error", message: "Current password is incorrect" });
+      }
+      const encryptedPassword = await bcrypt.hash(newPassword, 10);
+      userRecord.password = encryptedPassword;
+    }
+
+    // Update general and info fields
+    if (name) userRecord.name = name;
+    if (idNumber) userRecord.idNumber = idNumber;
+    if (birthday) userRecord.birthday = birthday;
+    if (country) userRecord.country = country;
+    if (contactNumber) userRecord.contactNumber = contactNumber;
+
+    // Save updated user record
+    await userRecord.save();
+
+    res.json({ status: "okay", message: "Profile updated successfully" });
   } catch (error) {
-    res.send({ status: "error", error: error.message });
+    console.error("Error updating profile:", error.message);
+    res.status(500).json({ status: "error", message: "Internal Server Error" });
   }
 });
 
-// Fetch news route
+
 app.get("/news", async (req, res) => {
   try {
     const news = await News.find({});
@@ -220,34 +235,55 @@ app.get("/news", async (req, res) => {
   }
 });
 
-// Create news route with authentication and authorization
 app.post('/create-news', authenticateToken, authorizeRole('admin'), upload.single('photo'), async (req, res) => {
   try {
     const { title, description } = req.body;
     const photo = req.file ? `/uploads/${req.file.filename}` : null;
-
-    const news = new News({
-      title,
-      description,
-      photo,
-    });
-
+    const news = new News({ title, description, photo });
     await news.save();
-
     res.status(200).json({ status: 'success', data: news });
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message });
   }
 });
 
-// Image upload route
+app.put('/news/:id', authenticateToken, authorizeRole('admin'), upload.single('photo'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    const photo = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const updatedNews = await News.findByIdAndUpdate(id, { title, description, photo }, { new: true });
+
+    if (!updatedNews) {
+      return res.status(404).json({ status: 'error', message: 'News not found' });
+    }
+
+    res.status(200).json({ status: 'success', data: updatedNews });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+app.delete('/news/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedNews = await News.findByIdAndDelete(id);
+
+    if (!deletedNews) {
+      return res.status(404).json({ status: 'error', message: 'News not found' });
+    }
+
+    res.status(200).json({ status: 'success', message: 'News deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 app.post('/upload-image', upload.single('imageFile'), (req, res) => {
-  // Handle the uploaded file here
   res.send('Image uploaded successfully');
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(5000, () => {
+  console.log("port 5000, Server started...");
 });

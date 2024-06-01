@@ -1,6 +1,7 @@
 // src/components/userDetails.js
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export default class UserDetails extends Component {
   constructor(props) {
@@ -39,30 +40,30 @@ export default class UserDetails extends Component {
         this.setState({ error: error.message });
       });
 
-  // Fetch news data
-  fetch("http://localhost:5000/news", {
-    method: "GET",
-    crossDomain: true,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch news data");
-      }
-      return res.json();
+    // Fetch news data
+    fetch("http://localhost:5000/news", {
+      method: "GET",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     })
-    .then((data) => {
-      console.log(data, "news");
-      this.setState({ news: data });
-    })
-    .catch((error) => {
-      this.setState({ error: error.message });
-    });
-}
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch news data");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data, "news");
+        this.setState({ news: data });
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+      });
+  }
 
   logOut = () => {
     window.localStorage.clear();
@@ -81,20 +82,27 @@ export default class UserDetails extends Component {
             </Link>
             <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item">
+                <li className="nav-item nav-item-custom">
                   <Link className="nav-link" to={'/about-us'} style={{ color: 'white' }}>
                     About Us
                   </Link>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item nav-item-custom">
                   <Link className="nav-link" to={'/create-news'} style={{ color: 'white' }}>
                     News
                   </Link>
                 </li>
-              </ul>
+                {userData && userData.role === 'admin' && (
+                  <li className="nav-item nav-item-custom">
+                    <Link className="nav-link" to={'/admin-dashboard'} style={{ color: 'white' }}>
+                     Dashboard
+                   </Link>
+                 </li>
+               )}
+             </ul>
               <button onClick={this.logOut} className="btn btn-primary custom-btn">Log Out</button>
               <button onClick={() => window.location.href='/update-profile'} className="btn custom-btn1">Profile</button>
-            </div>
+            </div>            
           </div>
         </nav>
 

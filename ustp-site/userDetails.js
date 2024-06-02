@@ -8,7 +8,6 @@ const UserDetailsSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, required: true },
     idNumber: String, // Added idNumber field
-    bio: String,
     birthday: Date,
     country: String,
     phone: {

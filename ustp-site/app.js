@@ -192,16 +192,24 @@ app.post("/updateProfile", async (req, res) => {
     const user = jwt.verify(token, JWT_SECRET);
     const userEmail = user.email;
 
+    // Log the decoded token info
+    console.log("Decoded user from token:", user);
+
     // Find user by email
     const userRecord = await User.findOne({ email: userEmail });
     if (!userRecord) {
+      console.log("User not found with email:", userEmail);
       return res.status(404).json({ status: "error", message: "User not found" });
     }
+
+    // Log found user record
+    console.log("Found user record:", userRecord);
 
     // Update password if provided
     if (currentPassword && newPassword) {
       const isMatch = await bcrypt.compare(currentPassword, userRecord.password);
       if (!isMatch) {
+        console.log("Current password is incorrect for user:", userEmail);
         return res.status(400).json({ status: "error", message: "Current password is incorrect" });
       }
       const encryptedPassword = await bcrypt.hash(newPassword, 10);
@@ -213,7 +221,7 @@ app.post("/updateProfile", async (req, res) => {
     if (idNumber) userRecord.idNumber = idNumber;
     if (birthday) userRecord.birthday = birthday;
     if (country) userRecord.country = country;
-    if (contactNumber) userRecord.contactNumber = contactNumber;
+    if (contactNumber) userRecord.contactNumber = contactNumber; // Save the contact number
 
     // Save updated user record
     await userRecord.save();

@@ -67,7 +67,7 @@ const NewsCreation = () => {
         <nav className="navbar navbar-expand-lg navbar-light fixed-top">
           <div className="container">
             <Link className="navbar-brand" to={'/sign-in'} style={{ color: 'white' }}>
-              USTP-CoNext
+            CITC-CoNext
             </Link>
             <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
               <ul className="navbar-nav ml-auto">
@@ -96,6 +96,7 @@ const NewsCreation = () => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter the news title"
               required
             />
           </div>
@@ -106,6 +107,7 @@ const NewsCreation = () => {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter a brief description of the news"
               required
             ></textarea>
           </div>

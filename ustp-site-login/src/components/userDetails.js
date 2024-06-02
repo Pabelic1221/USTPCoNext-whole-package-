@@ -1,7 +1,6 @@
 // src/components/userDetails.js
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 export default class UserDetails extends Component {
   constructor(props) {
@@ -75,10 +74,11 @@ export default class UserDetails extends Component {
 
     return (
       <div className="App">
+        {/* Navigation */}
         <nav className="navbar navbar-expand-lg navbar-light fixed-top">
           <div className="container">
             <Link className="navbar-brand" to={'/sign-in'} style={{ color: 'white' }}>
-              USTP-CoNext
+              CITC-CoNext
             </Link>
             <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
               <ul className="navbar-nav ml-auto">
@@ -95,17 +95,18 @@ export default class UserDetails extends Component {
                 {userData && userData.role === 'admin' && (
                   <li className="nav-item nav-item-custom">
                     <Link className="nav-link" to={'/admin-dashboard'} style={{ color: 'white' }}>
-                     Dashboard
-                   </Link>
-                 </li>
-               )}
-             </ul>
+                      Dashboard
+                    </Link>
+                  </li>
+                )}
+              </ul>
               <button onClick={this.logOut} className="btn btn-primary custom-btn">Log Out</button>
               <button onClick={() => window.location.href='/update-profile'} className="btn custom-btn1">Profile</button>
-            </div>            
+            </div>
           </div>
         </nav>
 
+        {/* Main Content */}
         <section className="text-dark text-center text-sm-start p-5 mybg align-top custom-bg">
           <div className="container custom-margin">
             <div className="d-sm-flex align-items-center justify-content-between text-light">
@@ -125,7 +126,7 @@ export default class UserDetails extends Component {
               </div>
 
               <img
-                src="/path/to/header-img.png" // Update this path to the correct image location
+                src={require("../Resources/header-img.png")} // Update this path to the correct image location
                 alt="Header"
                 className="w-50 d-none d-sm-block hide-on-sm"
               />
@@ -141,15 +142,22 @@ export default class UserDetails extends Component {
             {news.map((item, index) => (
               <div key={index} className="col-lg-4 col-md-6 mb-4">
                 <div className="card">
-                  <img src={`http://localhost:5000${item.photo}`} className="card-img-top" alt={item.title} />
+                  {/* Update the image source to use the correct path */}
+                 <img
+                    src={`http://localhost:5000${item.photo}`} // Make sure item.photo contains the correct relative path to the image
+                    className="card-img-top"
+                    alt={item.title}
+                  />
                   <div className="card-body">
                     <h5 className="card-title">{item.title}</h5>
+                    {/* Additional card content, if needed */}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+           ))}
+         </div>
         </section>
+
         <br />
       </div>
     );

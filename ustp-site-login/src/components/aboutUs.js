@@ -6,7 +6,19 @@ import { faTwitter, faFacebookF, faInstagram, faLinkedinIn } from '@fortawesome/
 
 function AboutUs() {
   return (
-    <div>
+    <div className="App">
+        <nav className="navbar navbar-expand-lg navbar-light fixed-top">
+          <div className="container">
+            <Link className="navbar-brand" to={'/sign-in'} style={{ color: 'white' }}>
+            CITC-CoNext
+            </Link>
+            <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+              <ul className="navbar-nav ml-auto">
+              </ul>
+              <button onClick={() => window.location.href='/userDetails'} className="btn custom-btn1">Back</button>
+            </div>
+          </div>
+        </nav>
     <section id="administrators" className=""style={{ color: "#044556" }}>
       <div className="container mt-5">
         <div className="row pb-5">
@@ -81,28 +93,6 @@ function AboutUs() {
                   <FontAwesomeIcon icon={faFacebookF} />
                   <FontAwesomeIcon icon={faInstagram} />
                   <FontAwesomeIcon icon={faLinkedinIn} />   
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-sm-6 col-md-6 col-lg-3 mb-sm-4">
-            <div className="card text-center bg-light" style={{ height: "100%" }}>
-              <div className="card-body">
-                <img
-                  src="https://cdn.britannica.com/70/129770-050-AEBE1EB9/Robert-Downey-Jr-2008.jpg"
-                  className=" rounded-circle"
-                  alt=""
-                  style={{ height: "35%", width: "60%", objectFit: "cover" }}
-                />
-                <h4 className="card-title mt-3"style={{ color: "#000000" }}>Nozomi Kawakami</h4>
-                <p className="card-text" style={{ marginBottom: "3rem" }}>
-                a guy with an unknown background—joined our team determined to prove his worth through hard work and dedication.
-                </p>
-                <div className="icons-container" style={{ display: "flex", justifyContent: "center", gap: ".5rem" }}>
-                  <FontAwesomeIcon icon={faTwitter} />
-                  <FontAwesomeIcon icon={faFacebookF} />
-                  <FontAwesomeIcon icon={faInstagram} />
-                  <FontAwesomeIcon icon={faLinkedinIn} />           
                 </div>
               </div>
             </div>

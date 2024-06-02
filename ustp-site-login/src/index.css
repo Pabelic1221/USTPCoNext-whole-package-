@@ -82,8 +82,8 @@ html,
 }
 
 .custom-margin {
-  margin-top: 13rem !important; /* Adjust as needed */
-  margin-bottom: 20rem !important; /* Adjust as needed */
+  margin-top: 5rem !important; /* Adjust as needed */
+  margin-bottom: 5rem !important; /* Adjust as needed */
 }
 
 .auth-inner {

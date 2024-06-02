@@ -5,7 +5,7 @@ const UpdateProfile = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('general');
   const [formData, setFormData] = useState({
-    token: 'YOUR_JWT_TOKEN', // replace with actual token
+    token: localStorage.getItem('token'), // Get the token from localStorage
     name: '',
     idNumber: '',
     currentPassword: '',
@@ -13,7 +13,7 @@ const UpdateProfile = () => {
     confirmNewPassword: '',
     birthday: '',
     country: 'Philippines',
-    contactNumber: '+63',
+    contactNumber: '+63', // Ensure this has the +63 prefix
   });
 
   const [alert, setAlert] = useState({ message: '', type: '' });
@@ -36,7 +36,7 @@ const UpdateProfile = () => {
             name: data.data.name || '',
             idNumber: data.data.idNumber || '',
             birthday: data.data.birthday || '',
-            contactNumber: data.data.contactNumber || '',
+            contactNumber: data.data.contactNumber || '+63',
             country: data.data.country || 'Philippines',
           }));
         } else {
@@ -51,9 +51,16 @@ const UpdateProfile = () => {
   }, [formData.token]);
 
   const handleChange = (e) => {
+    let { name, value } = e.target;
+
+    // Ensure the +63 prefix for contactNumber
+    if (name === 'contactNumber' && !value.startsWith('+63')) {
+      value = '+63' + value.replace(/^(\+63)?/, '');
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
@@ -65,6 +72,7 @@ const UpdateProfile = () => {
           token: formData.token,
           name: formData.name,
           idNumber: formData.idNumber,
+          contactNumber: formData.contactNumber
         };
       } else if (activeSection === 'change-password') {
         bodyData = {
@@ -115,7 +123,7 @@ const UpdateProfile = () => {
       <nav className="navbar navbar-expand-lg navbar-light fixed-top">
         <div className="container">
           <Link className="navbar-brand" to={'/sign-in'} style={{ color: 'white' }}>
-            USTP-CoNext
+            CITC-CoNext
           </Link>
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav ml-auto">

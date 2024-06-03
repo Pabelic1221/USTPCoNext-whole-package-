@@ -1,6 +1,7 @@
-// src/components/userDetails.js
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button } from 'react-bootstrap';
 
 export default class UserDetails extends Component {
   constructor(props) {
@@ -9,10 +10,13 @@ export default class UserDetails extends Component {
       userData: null,
       error: null,
       news: [],
+      showModal: false,
+      selectedNews: null,
     };
   }
 
   componentDidMount() {
+    // Fetch user data
     fetch("http://localhost:5000/userData", {
       method: "POST",
       crossDomain: true,
@@ -39,7 +43,7 @@ export default class UserDetails extends Component {
         this.setState({ error: error.message });
       });
 
-    // Fetch news data
+    // Fetch all news sorted by date/time
     fetch("http://localhost:5000/news", {
       method: "GET",
       crossDomain: true,
@@ -56,8 +60,14 @@ export default class UserDetails extends Component {
         return res.json();
       })
       .then((data) => {
-        console.log(data, "news");
-        this.setState({ news: data });
+        // Sort the news data by date/time in descending order
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Slice the first three items to display
+        const limitedNews = data.slice(0, 3);
+        
+        // Update the state with the limited news data
+        this.setState({ news: limitedNews });
       })
       .catch((error) => {
         this.setState({ error: error.message });
@@ -69,11 +79,19 @@ export default class UserDetails extends Component {
     window.location.href = "./sign-in";
   };
 
+  handleCardClick = (newsItem) => {
+    this.setState({ selectedNews: newsItem, showModal: true });
+  };
+
+  handleCloseModal = () => {
+    this.setState({ showModal: false, selectedNews: null });
+  };
+
   render() {
-    const { userData, error, news } = this.state;
+    const { userData, error, news, showModal, selectedNews } = this.state;
 
     return (
-      <div className="App">
+      <div className="App">        
         {/* Navigation */}
         <nav className="navbar navbar-expand-lg navbar-light fixed-top">
           <div className="container">
@@ -107,7 +125,7 @@ export default class UserDetails extends Component {
         </nav>
 
         {/* Main Content */}
-        <section className="text-dark text-center text-sm-start p-5 mybg align-top custom-bg">
+        <section className="text-dark text-center text-sm-start p-5 mybg align-top custom-bg main-content">
           <div className="container custom-margin">
             <div className="d-sm-flex align-items-center justify-content-between text-light">
               <div>
@@ -135,15 +153,20 @@ export default class UserDetails extends Component {
         </section>
 
         {/* News section */}
-        <section className="container mt-5">
+        <section className="container mt-5 mb-3">
           <h2 className="text-center mb-4">Latest News</h2>
-          <div className="row">
+          <div className="row justify-content-center">
             {/* Map through news array and render each news card */}
             {news.map((item, index) => (
-              <div key={index} className="col-lg-4 col-md-6 mb-4">
+              <div 
+                key={index} 
+                className="col-lg-4 col-md-6 mb-4 d-flex justify-content-center"
+                onClick={() => this.handleCardClick(item)} // Add onClick handler
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="card">
                   {/* Update the image source to use the correct path */}
-                 <img
+                  <img
                     src={`http://localhost:5000${item.photo}`} // Make sure item.photo contains the correct relative path to the image
                     className="card-img-top"
                     alt={item.title}
@@ -154,11 +177,52 @@ export default class UserDetails extends Component {
                   </div>
                 </div>
               </div>
-           ))}
-         </div>
+            ))}
+          </div>
+          <div className="row justify-content-center mt-4"> {/* Centering the More News button */}
+            <div className="col-lg-4 col-md-6 text-center">
+              {news.length > 2 && (
+                <Link to="/all-news" className="btn btn-primary">More News</Link>
+              )}
+            </div>
+          </div>
         </section>
 
-        <br />
+        {/* Modal */}
+        <Modal show={showModal} onHide={this.handleCloseModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedNews && selectedNews.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedNews && (
+              <>
+                <img
+                  src={`http://localhost:5000${selectedNews.photo}`} // Make sure item.photo contains the correct relative path to the image
+                  className="img-fluid mb-3"
+                  alt={selectedNews.title}
+                />
+                <p>{selectedNews.description}</p>
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleCloseModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Footer */}
+        <footer style={{ backgroundColor: '#044556', color: 'white', padding: '20px', textAlign: 'center', marginTop: 'auto', width: '100%' }}>
+          <div className="container">
+            <p>
+              Copyright 2024 QuanitGoals. 
+              <Link to="/privacy-policy" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Privacy Policy</Link> 
+              <Link to="/terms-conditions" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Terms & Conditions</Link> 
+              <Link to="/contact" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Contact</Link>
+            </p>
+          </div>
+        </footer>
       </div>
     );
   }

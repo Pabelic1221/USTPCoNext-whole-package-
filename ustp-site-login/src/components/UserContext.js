@@ -67,6 +67,10 @@ export const UserProvider = ({ children, navigate }) => {
         if (data.status === "okay") {
           alert("Registered Successfully");
           navigate('/sign-in');
+        } else if (data.error === "User Exists") {
+          alert("User already exists. Please use a different email.");
+        } else if (data.error === "Validation Error") {
+          alert("Validation Error. Please check your input fields.");
         } else {
           alert(data.error || "Registration failed");
         }

@@ -21,6 +21,16 @@ const Unauthorized = () => {
       <h1>Unauthorized Access</h1>
       <p>You do not have permission to access this page.</p>
     </div>
+    <footer style={{ backgroundColor: '#044556', color: 'white', padding: '20px', textAlign: 'center' }}>
+          <div className="container">
+            <p>
+              Copyright 2024 QuanitGoals. 
+              <Link to="/privacy-policy" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Privacy Policy</Link>, 
+              <Link to="/terms-conditions" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Terms & Conditions</Link>, 
+              <Link to="/contact" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Contact</Link>
+            </p>
+          </div>
+        </footer>
     </div>
   );
 };

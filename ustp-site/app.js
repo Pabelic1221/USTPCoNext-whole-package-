@@ -5,13 +5,14 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+const jwt = require("jsonwebtoken");
 
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const jwt = require("jsonwebtoken");
 const JWT_SECRET = "qwertyasdfzxc1238910!?";
 
 const mongoUrl = "mongodb+srv://pabelicjush:Pabelic1221@cluster0.zou00st.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -25,10 +26,15 @@ mongoose.connect(mongoUrl, {
 require("./userDetails");
 require("./news");
 
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'uploads');
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -217,7 +223,7 @@ app.post("/updateProfile", async (req, res) => {
     }
 
     // Update general and info fields
-    if (name) userRecord.name = name;
+    if (    name) userRecord.name = name;
     if (idNumber) userRecord.idNumber = idNumber;
     if (birthday) userRecord.birthday = birthday;
     if (country) userRecord.country = country;
@@ -233,10 +239,21 @@ app.post("/updateProfile", async (req, res) => {
   }
 });
 
-
+// Fetch all news items sorted by date (latest first)
 app.get("/news", async (req, res) => {
   try {
-    const news = await News.find({});
+    const news = await News.find().sort({ createdAt: -1 }); // Sort by createdAt field in descending order
+    res.status(200).json(news);
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Fetch limited news items sorted by date (latest first)
+app.get("/limited-news", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 3; // Default to 3 if limit is not specified
+  try {
+    const news = await News.find().sort({ createdAt: -1 }).limit(limit);
     res.status(200).json(news);
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message });
@@ -293,5 +310,6 @@ app.post('/upload-image', upload.single('imageFile'), (req, res) => {
 });
 
 app.listen(5000, () => {
-  console.log("port 5000, Server started...");
+  console.log("Server started on port 5000...");
 });
+

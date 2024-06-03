@@ -17,6 +17,7 @@ const UpdateProfile = () => {
   });
 
   const [alert, setAlert] = useState({ message: '', type: '' });
+  const [passwordMatch, setPasswordMatch] = useState(true); // State to track password match
 
   // Fetch user details on component mount
   useEffect(() => {
@@ -58,6 +59,19 @@ const UpdateProfile = () => {
       value = '+63' + value.replace(/^(\+63)?/, '');
     }
 
+    // Check if the name of the input field is 'confirmNewPassword'
+    if (name === 'confirmNewPassword') {
+      // Check if the value matches the value of 'newPassword'
+      if (value !== formData.newPassword) {
+        // If it doesn't match, set passwordMatch to false
+        setPasswordMatch(false);
+      } else {
+        // If the passwords match, set passwordMatch to true
+        setPasswordMatch(true);
+      }
+    }
+
+    // Update the form data
     setFormData({
       ...formData,
       [name]: value,
@@ -137,7 +151,7 @@ const UpdateProfile = () => {
           </div>
         </div>
       </nav>
-      <div className="container custom-margin">
+      <div className="container custom-margin1">
         <h2 className="my-4">Account settings</h2>
         {alert.message && (
           <div className={`alert ${alert.type === 'success' ? 'alert-success' : 'alert-danger'}`}>
@@ -231,11 +245,12 @@ const UpdateProfile = () => {
                     <input
                       type="password"
                       name="confirmNewPassword"
-                      className="form-control"
+                      className={`form-control ${!passwordMatch ? 'is-invalid' : ''}`} // Apply 'is-invalid' class if passwords don't match
                       value={formData.confirmNewPassword}
                       onChange={handleChange}
                       placeholder="Confirm new password"
                     />
+                    {!passwordMatch && <div className="invalid-feedback">Passwords do not match</div>} {/* Show error message if passwords don't match */}
                   </div>
                 </form>
               </div>
@@ -284,8 +299,18 @@ const UpdateProfile = () => {
         <button onClick={handleSave} className="btn custom-btn1 mt-3">Save Changes</button>
         <button onClick={handleCancel} className="btn custom-btn2 mt-3 ml-2">Cancel</button>
       </div>
+      <footer style={{ backgroundColor: '#044556', color: 'white', padding: '20px', textAlign: 'center', position: 'fixed', bottom: 0, width: '100%' }}>
+          <div className="container">
+            <p>
+              Copyright 2024 QuanitGoals. 
+              <Link to="/privacy-policy" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Privacy Policy</Link>, 
+              <Link to="/terms-conditions" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Terms & Conditions</Link>, 
+              <Link to="/contact" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Contact</Link>
+            </p>
+          </div>
+        </footer>
     </div>
-);
+  );
 };
 
 export default UpdateProfile;

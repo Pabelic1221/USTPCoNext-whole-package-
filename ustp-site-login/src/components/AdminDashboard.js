@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminDashboard = () => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState(null);
   const [form, setForm] = useState({ title: '', description: '', photo: null });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     fetchNews();
@@ -17,6 +21,7 @@ const AdminDashboard = () => {
       setNewsList(response.data);
     } catch (error) {
       console.error('Error fetching news:', error);
+      setErrorMessage('Error fetching news: ' + error.message);
     }
   };
 
@@ -25,15 +30,23 @@ const AdminDashboard = () => {
       await axios.delete(`http://localhost:5000/news/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
+      setSuccessMessage('News deleted successfully!');
+      setErrorMessage('');
       fetchNews();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
-      console.error('Error deleting news:', error);
+      setErrorMessage('Error deleting news: ' + error.message);
+      setSuccessMessage('');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleEdit = (news) => {
     setSelectedNews(news);
     setForm({ title: news.title, description: news.description, photo: null });
+    setSuccessMessage('');
+    setErrorMessage('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleChange = (e) => {
@@ -58,16 +71,20 @@ const AdminDashboard = () => {
         await axios.put(`http://localhost:5000/news/${selectedNews._id}`, formData, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
+        setSuccessMessage('News updated successfully!');
       } else {
         await axios.post('http://localhost:5000/create-news', formData, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
+        setSuccessMessage('News created successfully!');
       }
       setSelectedNews(null);
       setForm({ title: '', description: '', photo: null });
       fetchNews();
+      setErrorMessage('');
     } catch (error) {
-      console.error('Error saving news:', error);
+      setErrorMessage('Error saving news: ' + error.message);
+      setSuccessMessage('');
     }
   };
 
@@ -85,8 +102,10 @@ const AdminDashboard = () => {
           </div>
         </div>
       </nav>
-      <div className="container custom-margin">
+      <div className="container custom-margin1">
         <h1>Admin Dashboard</h1>
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="title" className="form-label">Title</label>
@@ -142,6 +161,16 @@ const AdminDashboard = () => {
           ))}
         </ul>
       </div>
+      <footer style={{ backgroundColor: '#044556', color: 'white', padding: '20px', textAlign: 'center' }}>
+        <div className="container">
+          <p>
+            Copyright 2024 QuanitGoals. 
+            <Link to="/privacy-policy" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Privacy Policy</Link>, 
+            <Link to="/terms-conditions" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Terms & Conditions</Link>, 
+            <Link to="/contact" style={{ color: '#A0ABC0', marginLeft: '10px', marginRight: '10px', textDecoration: 'none' }}>Contact</Link>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -264,7 +264,7 @@ app.post('/create-news', authenticateToken, authorizeRole('admin'), upload.singl
   try {
     const { title, description } = req.body;
     const photo = req.file ? `/uploads/${req.file.filename}` : null;
-    const news = new News({ title, description, photo });
+    const news = new News({ title, description, photo, createdAt: new Date() });
     await news.save();
     res.status(200).json({ status: 'success', data: news });
   } catch (error) {
@@ -272,13 +272,20 @@ app.post('/create-news', authenticateToken, authorizeRole('admin'), upload.singl
   }
 });
 
+
+// Update news item with latest time and date when edited
 app.put('/news/:id', authenticateToken, authorizeRole('admin'), upload.single('photo'), async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description } = req.body;
     const photo = req.file ? `/uploads/${req.file.filename}` : null;
 
-    const updatedNews = await News.findByIdAndUpdate(id, { title, description, photo }, { new: true });
+    const updateData = { title, description, updatedAt: new Date() };
+    if (photo) {
+      updateData.photo = photo;
+    }
+
+    const updatedNews = await News.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!updatedNews) {
       return res.status(404).json({ status: 'error', message: 'News not found' });
@@ -289,6 +296,7 @@ app.put('/news/:id', authenticateToken, authorizeRole('admin'), upload.single('p
     res.status(500).json({ status: 'error', message: error.message });
   }
 });
+
 
 app.delete('/news/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
   try {

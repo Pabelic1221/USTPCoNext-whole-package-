@@ -147,13 +147,17 @@ const AdminDashboard = () => {
         <hr />
         <ul className="list-group">
           {newsList.map((news) => (
-            <li key={news._id} className="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <img src={`http://localhost:5000${news.photo}`} alt={news.title} width="100" className="me-3" />
+            <li key={news._id} className="list-group-item d-flex justify-content-between align-items-center news-item">
+              <img src={`http://localhost:5000${news.photo}`} alt={news.title} className="news-image" />
+              <div className="news-content">
                 <h2 className="h5 mb-1">{news.title}</h2>
                 <p className="mb-1">{news.description}</p>
+                <small className="text-muted">Published: {news.publishedAt ? new Date(news.publishedAt).toLocaleString() : 'N/A'}</small>
+                {news.updatedAt && (
+                  <small className="text-muted d-block">Updated: {new Date(news.updatedAt).toLocaleString()}</small>
+                )}
               </div>
-              <div>
+              <div className="news-actions">
                 <button onClick={() => handleEdit(news)} className="btn btn-warning me-2">Edit</button>
                 <button onClick={() => handleDelete(news._id)} className="btn btn-danger">Delete</button>
               </div>

@@ -21,7 +21,7 @@ const Unauthorized = () => {
       <h1>Unauthorized Access</h1>
       <p>You do not have permission to access this page.</p>
     </div>
-    <footer style={{ backgroundColor: '#044556', color: 'white', padding: '20px', textAlign: 'center' }}>
+    <footer style={{ backgroundColor: '#044556', color: 'white', padding: '20px', textAlign: 'center', position: 'fixed', bottom: 0, width: '100%' }}>
           <div className="container">
             <p>
               Copyright 2024 QuanitGoals. 

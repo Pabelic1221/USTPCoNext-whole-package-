@@ -91,13 +91,16 @@ export default class UserDetails extends Component {
     const { userData, error, news, showModal, selectedNews } = this.state;
 
     return (
-      <div className="App">        
+      <div className="App">
         {/* Navigation */}
         <nav className="navbar navbar-expand-lg navbar-light fixed-top">
           <div className="container">
             <Link className="navbar-brand" to={'/sign-in'} style={{ color: 'white' }}>
               CITC-CoNext
             </Link>
+            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon"></span>
+            </button>
             <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item nav-item-custom">
@@ -181,7 +184,7 @@ export default class UserDetails extends Component {
           </div>
           <div className="row justify-content-center mt-4"> {/* Centering the More News button */}
             <div className="col-lg-4 col-md-6 text-center">
-              {news.length > 2 && (
+              {news.length >= 3 && (
                 <Link to="/all-news" className="btn btn-primary">More News</Link>
               )}
             </div>

@@ -126,3 +126,42 @@ html, body {
   font-size: 1.25rem;
   font-weight: bold;
 }
+.news-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.news-image {
+  width: 100px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.news-content {
+  flex-grow: 1;
+}
+
+.news-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.news-actions .btn {
+  margin-bottom: 5px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.back-button {
+  width: auto;
+  min-width: 100px; /* Adjust as needed */
+  max-width: 200px; /* Adjust as needed */
+  text-align: center;
+}
+

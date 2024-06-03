@@ -7,7 +7,8 @@ export default class Login extends Component {
     super(props);
     this.state = {
       email: "",
-      password: "", // Corrected typo here
+      password: "",
+      errorMessage: "", // Added state to hold error messages
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -36,8 +37,14 @@ export default class Login extends Component {
           alert("Login Successful");
           window.localStorage.setItem("token", data.data);
           window.localStorage.setItem("loggedIn", true);
-          window.location.href = "./userDetails"; // Use navigate instead for better control
+          window.location.href = "./userDetails";
+        } else {
+          this.setState({ errorMessage: "Incorrect email or password" }); // Set error message
         }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        this.setState({ errorMessage: "An error occurred. Please try again later." });
       });
   }
 
@@ -70,6 +77,12 @@ export default class Login extends Component {
           <div className="auth-inner">
             <form onSubmit={this.handleSubmit}>
               <h3>Sign In</h3>
+
+              {this.state.errorMessage && (
+                <div className="alert alert-danger" role="alert">
+                  {this.state.errorMessage}
+                </div>
+              )}
 
               <div className="mb-3">
                 <label>Email address</label>

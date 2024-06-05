@@ -317,6 +317,72 @@ app.post('/upload-image', upload.single('imageFile'), (req, res) => {
   res.send('Image uploaded successfully');
 });
 
+
+//MOBILE
+
+//SIGNUP
+app.post("/SignUp", async (req, res) => {
+  const { fname, lname, email, password, role } = req.body;
+  const encryptedPassword = await bcrypt.hash(password, 10);
+  try {
+    const oldUser = await User.findOne({ email });
+    if (oldUser) {
+      return res.send({ error: "User Exists" });
+    }
+    await User.create({
+      fname,
+      lname,
+      email,
+      password: encryptedPassword,
+      role
+    });
+    res.send({ status: "okay" });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      console.log(error.message);
+      res.send({ error: "Validation Error" });
+    } else if (error.name === "MongoError" && error.code === 11000) {
+      res.send({ error: "Duplicate Key Error" });
+    } else {
+      res.send({ error: "Unknown Error" });
+    }
+  }
+});
+
+//LOGIN
+app.post("/Login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.json({ error: "User Not Found" });
+  }
+  if (await bcrypt.compare(password, user.password)) {
+    const token = jwt.sign({ email: user.email, role: user.role }, JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    if (res.status(201)) {
+      return res.json({ status: "okay", data: token });
+    } else {
+      return res.json({ error: "error" });
+    }
+  }
+  res.json({ status: "error", error: "Invalid Password" });
+});
+
+//FETCHNEWS
+app.get("/fetchnews", async (req, res) => {
+  try {
+    const news = await News.find().sort({ createdAt: -1 }); // Sort by createdAt field in descending order
+    res.status(200).json(news);
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+
+
+
 app.listen(5000, () => {
   console.log("Server started on port 5000...");
 });
